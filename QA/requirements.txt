@@ -1,0 +1,35 @@
+# Requirements for COG Protein Function Prediction Pipeline
+# Compatible with all scripts: cog_extractor.py, ollama_predictor_modified.py, ollama_predictor_modified_no_ej.py
+
+# Core data processing
+pandas>=1.5.0
+numpy>=1.20.0
+
+# Bioinformatics
+biopython>=1.80
+
+# HTTP requests and API communication
+requests>=2.25.0
+
+# Progress bars and CLI
+tqdm>=4.60.0
+
+# Built-in Python modules (included for documentation)
+# argparse - Command line argument parsing
+# pickle - Data serialization
+# pathlib - Path manipulation
+# gzip - Compressed file handling
+# csv - CSV file processing
+# json - JSON handling
+# time - Time operations
+# re - Regular expressions
+# sys - System operations
+# os - Operating system interface
+# typing - Type hints
+# warnings - Warning control
+# logging - Logging functionality
+
+# Optional but recommended for analysis
+# scikit-learn>=1.0.0  # For metrics and evaluation (uncomment if needed)
+# matplotlib>=3.5.0    # For plotting results (uncomment if needed)
+# seaborn>=0.11.0      # For statistical plotting (uncomment if needed)
