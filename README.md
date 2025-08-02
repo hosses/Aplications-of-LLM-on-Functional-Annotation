@@ -20,3 +20,15 @@ Observaciones:
         auto_params = {'temperature': 0.15, 'top_p': 0.85}  # Más determinístico
 
 revisar esa configuracion!!
+
+1. Only prompt Usage
+   1. Data_preparation
+   2. Hybrid_loader
+   3. Benchmark multitask
+
+2. Rag Usage
+
+3. Finetuning models
+   1. Data_processor
+   2. Finetuner
+   3. Evaluation
