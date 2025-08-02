@@ -1,0 +1,153 @@
+# ====================================================================
+# COG Protein Function Prediction Pipeline - Requirements
+# ====================================================================
+
+# Core dependencies
+numpy>=1.21.0
+pandas>=1.5.0
+scipy>=1.9.0
+
+# Machine Learning and Deep Learning
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+transformers>=4.30.0
+datasets>=2.12.0
+accelerate>=0.20.0
+peft>=0.4.0
+
+# Unsloth for optimized fine-tuning
+# Install with: pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
+# Note: This will be installed separately due to git dependency
+
+# TRL for supervised fine-tuning
+trl>=0.7.0
+
+# Scientific computing and bioinformatics
+biopython>=1.81
+scikit-learn>=1.3.0
+
+# Progress bars and UI
+tqdm>=4.65.0
+
+# Data visualization (optional but recommended)
+matplotlib>=3.6.0
+seaborn>=0.12.0
+
+# JSON and data handling
+jsonlines>=3.1.0
+
+# Argument parsing (usually included in Python)
+argparse>=1.1
+
+# Logging (usually included in Python)
+logging>=0.4.9.6
+
+# Path handling (usually included in Python) 
+pathlib>=1.0.1
+
+# Regular expressions (usually included in Python)
+re>=2.2.1
+
+# Collections (usually included in Python)
+collections>=1.0
+
+# DateTime (usually included in Python)
+datetime>=4.7
+
+# Time utilities (usually included in Python)
+time>=1.0
+
+# Subprocess (usually included in Python)
+subprocess>=1.0
+
+# Warnings (usually included in Python)
+warnings>=1.0
+
+# Random (usually included in Python)
+random>=1.0
+
+# Itertools (usually included in Python)
+itertools>=1.0
+
+# Typing annotations (usually included in Python 3.8+)
+typing>=3.10.0
+
+# Optional: for enhanced functionality
+# ====================================================================
+
+# Jupyter notebooks (for analysis)
+jupyter>=1.0.0
+ipykernel>=6.15.0
+
+# Advanced metrics and model evaluation
+wandb>=0.15.0  # For experiment tracking (optional)
+
+# Memory optimization
+psutil>=5.9.0
+
+# GPU memory management
+pynvml>=11.5.0
+
+# Advanced visualization
+plotly>=5.15.0
+
+# Statistical analysis
+statsmodels>=0.14.0
+
+# Development dependencies (optional)
+# ====================================================================
+
+# Code formatting
+black>=23.0.0
+isort>=5.12.0
+
+# Type checking
+mypy>=1.4.0
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+
+# Documentation
+sphinx>=7.0.0
+
+# ====================================================================
+# Platform-specific notes:
+# ====================================================================
+
+# For CUDA GPU support (Linux/Windows):
+# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+
+# For MPS GPU support (macOS with Apple Silicon):
+# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+
+# For CPU-only installation:
+# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+
+# ====================================================================
+# Installation order recommendations:
+# ====================================================================
+
+# 1. Install PyTorch first with appropriate CUDA version
+# 2. Install transformers and related ML libraries
+# 3. Install Unsloth separately:
+#    pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
+# 4. Install remaining dependencies
+# 5. Verify installation with: python -c "import torch; print(torch.cuda.is_available())"
+
+# ====================================================================
+# Minimum versions tested:
+# ====================================================================
+# Python: 3.8+
+# CUDA: 11.8+ (for GPU support)
+# Memory: 8GB RAM (16GB+ recommended for large datasets)
+# Storage: 10GB+ free space (for models and data)
+
+# ====================================================================
+# Known compatibility issues:
+# ====================================================================
+# - Unsloth requires specific versions of transformers and torch
+# - Some versions of transformers may conflict with TRL
+# - CUDA version must match PyTorch CUDA version
+# - On Windows, may need Microsoft Visual C++ Build Tools
