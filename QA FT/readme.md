@@ -4,8 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Ollama](https://img.shields.io/badge/Ollama-Required-green.svg)](https://ollama.ai/)
 
-Un pipeline completo para predicción de funciones de proteínas usando categorías COG (Clusters of Orthologous Groups) con modelos de lenguaje fine-tuneados.
-
+Pipeline completo para hacer Finetuning a modelos LLM en conocimientos sobre COG 
 ## 🚀 Características Principales
 
 - **Procesamiento de datos COG** con regiones funcionales (footprints)
