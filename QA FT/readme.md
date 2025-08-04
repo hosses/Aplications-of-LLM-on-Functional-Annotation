@@ -5,6 +5,7 @@
 [![Ollama](https://img.shields.io/badge/Ollama-Required-green.svg)](https://ollama.ai/)
 
 Pipeline completo para hacer Finetuning a modelos LLM en conocimientos sobre COG 
+
 ## 🚀 Características Principales
 
 - **Procesamiento de datos COG** con regiones funcionales (footprints)
