@@ -1,22 +1,5 @@
 #!/usr/bin/env python3
 """
-COG 2024 Specialized Data Analyzer
-
-Este script analiza específicamente los archivos de COG 2024 basándose en las 
-especificaciones del readme y genera gráficos detallados sobre la distribución
-y características de los datos.
-
-Basado en:
-- cog-24.cog.csv (585M) - Asignaciones proteína-COG  
-- cog-24.fun.tab (1.3K) - Categorías funcionales
-- cog-24.def.tab (371K) - Definiciones COG
-- cog-24.mapping.tab (371K) - Mapeo UniProt
-- cog-24.org.csv (159K) - Genomas
-- cog-24.tax.csv (1.2K) - Taxonomía
-- cog-24.pathways.tab (50K) - Pathways
-- COGorg24.faa.gz (1.5G) - Secuencias proteínas
-- COGorg24.gene.tab.gz (423M) - Información genes
-
 Uso:
     python cog2024_analyzer.py [--data-dir DIR] [--output-dir DIR] [--sample-size N]
 """
@@ -80,7 +63,7 @@ class COG2024Analyzer:
     def check_files(self) -> Dict[str, bool]:
         """Verifica qué archivos están disponibles."""
         available = {}
-        print(f"🔍 Verificando archivos en: {self.data_dir}")
+        print(f"Verificando archivos en: {self.data_dir}")
         print("=" * 60)
         
         for data_type, filename in self.expected_files.items():
@@ -90,9 +73,9 @@ class COG2024Analyzer:
             if file_path.exists():
                 size = file_path.stat().st_size
                 size_str = self._format_size(size)
-                print(f"✅ {data_type:18} | {filename:20} | {size_str:>8}")
+                print(f"{data_type:18} | {filename:20} | {size_str:>8}")
             else:
-                print(f"❌ {data_type:18} | {filename:20} | Missing")
+                print(f"{data_type:18} | {filename:20} | Missing")
         
         available_count = sum(available.values())
         print(f"\n📊 {available_count}/{len(self.expected_files)} archivos disponibles")
@@ -110,7 +93,7 @@ class COG2024Analyzer:
         """Carga todos los archivos disponibles."""
         available = self.check_files()
         
-        print(f"\n📂 Cargando datos...")
+        print(f"\n Cargando datos...")
         
         # Cargar archivos pequeños completos
         small_files = ['functions', 'definitions', 'mapping', 'genomes', 'taxonomy', 'pathways']
@@ -120,16 +103,16 @@ class COG2024Analyzer:
         
         # Cargar archivos grandes con muestras
         if available.get('cog_assignments', False):
-            print(f"\n📄 Cargando cog_assignments (archivo grande - muestra de {self.sample_size:,} registros)...")
+            print(f"\nCargando cog_assignments (archivo grande - muestra de {self.sample_size:,} registros)...")
             self._load_large_file('cog_assignments')
         
         if available.get('gene_info', False):
-            print(f"\n📄 Cargando gene_info (archivo muy grande - muestra de {self.sample_size//10:,} registros)...")  
+            print(f"\nCargando gene_info (archivo muy grande - muestra de {self.sample_size//10:,} registros)...")  
             self._load_gene_info_sample()
         
         # Cargar secuencias solo para análisis estadístico
         if available.get('protein_sequences', False):
-            print(f"\n📄 Analizando protein_sequences (solo estadísticas)...")
+            print(f"\nAnalizando protein_sequences (solo estadísticas)...")
             self._analyze_protein_sequences()
     
     def _load_file(self, data_type: str) -> None:
@@ -138,7 +121,7 @@ class COG2024Analyzer:
         file_path = self.data_dir / filename
         
         try:
-            print(f"   📖 {data_type}: {filename}")
+            print(f"{data_type}: {filename}")
             
             # Parámetros base para lectura robusta
             read_params = {
@@ -180,13 +163,13 @@ class COG2024Analyzer:
                 df = pd.read_csv(file_path, **read_params)
             
             self.data[data_type] = df
-            print(f"      ✅ {len(df):,} registros, {len(df.columns)} columnas")
+            print(f"{len(df):,} registros, {len(df.columns)} columnas")
             
         except Exception as e:
-            print(f"      ❌ Error inicial: {e}")
+            print(f"Error inicial: {e}")
             # Fallback: intentar con parámetros más permisivos
             try:
-                print(f"      🔄 Intentando lectura alternativa...")
+                print(f"Intentando lectura alternativa...")
                 
                 fallback_params = {
                     'sep': '\t' if not filename.endswith('.csv') else ',',
@@ -210,16 +193,16 @@ class COG2024Analyzer:
                     df = pd.read_csv(file_path, **fallback_params)
                 
                 self.data[data_type] = df
-                print(f"      ⚠️  Carga alternativa exitosa: {len(df):,} registros, {len(df.columns)} columnas")
+                print(f"Carga alternativa exitosa: {len(df):,} registros, {len(df.columns)} columnas")
                 
             except Exception as e2:
-                print(f"      ❌ Error final: {e2}")
+                print(f"Error final: {e2}")
                 # Último intento: leer línea por línea
                 try:
-                    print(f"      🔄 Último intento: lectura línea por línea...")
+                    print(f"Último intento: lectura línea por línea...")
                     self._load_file_line_by_line(data_type, file_path)
                 except:
-                    print(f"      ❌ No se pudo cargar el archivo")
+                    print(f"No se pudo cargar el archivo")
     
     def _load_file_line_by_line(self, data_type: str, file_path: Path) -> None:
         """Carga un archivo línea por línea para casos problemáticos."""
@@ -276,12 +259,12 @@ class COG2024Analyzer:
             if header and lines:
                 df = pd.DataFrame(lines, columns=header)
                 self.data[data_type] = df
-                print(f"      ✅ Carga manual exitosa: {len(df):,} registros, {len(df.columns)} columnas")
+                print(f"Carga manual exitosa: {len(df):,} registros, {len(df.columns)} columnas")
             else:
-                print(f"      ❌ No se pudo procesar el archivo")
+                print(f"No se pudo procesar el archivo")
                 
         except Exception as e:
-            print(f"      ❌ Error en carga manual: {e}")
+            print(f"Error en carga manual: {e}")
     
     def _load_large_file(self, data_type: str) -> None:
         """Carga una muestra de un archivo grande."""
@@ -309,10 +292,10 @@ class COG2024Analyzer:
             
             df = pd.read_csv(file_path, **read_params)
             self.data[data_type] = df
-            print(f"      ✅ Muestra: {len(df):,} de ~{total_lines:,} registros")
+            print(f"Muestra: {len(df):,} de ~{total_lines:,} registros")
             
         except Exception as e:
-            print(f"      ❌ Error: {e}")
+            print(f"Error: {e}")
             # Fallback: cargar primeras líneas
             try:
                 read_params = {
@@ -329,9 +312,9 @@ class COG2024Analyzer:
                 
                 df = pd.read_csv(file_path, **read_params)
                 self.data[data_type] = df
-                print(f"      ⚠️  Fallback: primeros {len(df):,} registros")
+                print(f"Fallback: primeros {len(df):,} registros")
             except:
-                print(f"      ❌ No se pudo cargar")
+                print(f"No se pudo cargar")
     
     def _load_gene_info_sample(self) -> None:
         """Carga muestra del archivo de información de genes."""
@@ -361,10 +344,10 @@ class COG2024Analyzer:
                 
                 df = pd.DataFrame(lines, columns=header)
                 self.data['gene_info'] = df
-                print(f"      ✅ Muestra: {len(df):,} genes")
+                print(f"Muestra: {len(df):,} genes")
                 
         except Exception as e:
-            print(f"      ❌ Error: {e}")
+            print(f"Error: {e}")
     
     def _analyze_protein_sequences(self) -> None:
         """Analiza estadísticas básicas de secuencias de proteínas."""
@@ -404,10 +387,10 @@ class COG2024Analyzer:
                 'std_length': np.std(sequence_lengths)
             }
             
-            print(f"      ✅ Estadísticas de {sequence_count:,} secuencias (muestra)")
+            print(f"Estadísticas de {sequence_count:,} secuencias (muestra)")
             
         except Exception as e:
-            print(f"      ❌ Error: {e}")
+            print(f"Error: {e}")
     
     def plot_data_overview(self) -> None:
         """Gráfico de overview general de los datos."""
@@ -543,7 +526,7 @@ class COG2024Analyzer:
     def plot_cog_assignments_analysis(self) -> None:
         """Análisis detallado de asignaciones COG según readme."""
         if 'cog_assignments' not in self.data:
-            print("⚠️  Datos de asignaciones COG no disponibles")
+            print("Datos de asignaciones COG no disponibles")
             return
         
         assignments = self.data['cog_assignments']
@@ -551,13 +534,6 @@ class COG2024Analyzer:
         fig, axes = plt.subplots(2, 3, figsize=(18, 12))
         axes = axes.flatten()
         
-        # Según readme: columnas del archivo cog-24.cog.csv
-        # 1. Gene ID, 2. NCBI Assembly ID, 3. Protein ID, 4. Protein length
-        # 5. COG footprint coords, 6. Length COG footprint, 7. COG ID
-        # 8. Reserved, 9. COG membership class, 10. PSI-BLAST bit score
-        # 11. PSI-BLAST e-value, 12. COG profile length, 13. Protein footprint coords
-        
-        # 1. Distribución de longitudes de proteínas (columna 4)
         ax = axes[0]
         if len(assignments.columns) > 3:
             protein_lengths = assignments.iloc[:, 3]
@@ -611,7 +587,6 @@ class COG2024Analyzer:
             ax.set_xticklabels(membership_classes.index)
             ax.grid(axis='y', alpha=0.3)
             
-            # Añadir valores
             for bar, count in zip(bars, membership_classes.values):
                 height = bar.get_height()
                 ax.text(bar.get_x() + bar.get_width()/2., height,
@@ -645,7 +620,6 @@ class COG2024Analyzer:
             ax.set_yticklabels([str(cog)[:10] for cog in cog_counts.index])
             ax.grid(axis='x', alpha=0.3)
             
-            # Añadir valores
             for bar, count in zip(bars, cog_counts.values):
                 width = bar.get_width()
                 ax.text(width + width*0.01, bar.get_y() + bar.get_height()/2.,
@@ -657,7 +631,6 @@ class COG2024Analyzer:
             protein_len = assignments.iloc[:, 3]
             footprint_len = assignments.iloc[:, 5]
             
-            # Tomar muestra para scatter plot
             mask = (protein_len > 0) & (footprint_len > 0)
             sample_size = min(5000, mask.sum())
             
@@ -681,7 +654,7 @@ class COG2024Analyzer:
     def plot_pathways_analysis(self) -> None:
         """Análisis detallado de pathways según readme."""
         if 'pathways' not in self.data:
-            print("⚠️  Datos de pathways no disponibles")
+            print("Datos de pathways no disponibles")
             return
         
         pathways_df = self.data['pathways']
@@ -689,11 +662,6 @@ class COG2024Analyzer:
         fig, axes = plt.subplots(2, 2, figsize=(16, 12))
         axes = axes.flatten()
         
-        # Según readme: columnas del archivo cog-24.pathways.tab
-        # 1. COG pathway/functional system, 2. COG ID, 3. COG functional category
-        # 4. Gene name, 5. COG name, 6. Enzyme Commission EC number(s)
-        
-        # 1. Top 20 pathways por número de COGs
         ax = axes[0]
         if len(pathways_df.columns) > 0:
             pathway_counts = pathways_df.iloc[:, 0].value_counts().head(20)
@@ -774,16 +742,13 @@ class COG2024Analyzer:
     def plot_genome_distribution(self) -> None:
         """Análisis de distribución de genomas."""
         if 'genomes' not in self.data:
-            print("⚠️  Datos de genomas no disponibles")
+            print("Datos de genomas no disponibles")
             return
         
         genomes_df = self.data['genomes']
         
         fig, axes = plt.subplots(2, 2, figsize=(16, 12))
         axes = axes.flatten()
-        
-        # Según readme: columnas del archivo cog-24.org.csv
-        # 1. NCBI Assembly ID, 2. Organism name, 3. NCBI Tax ID, 4. Taxonomic category
         
         # 1. Distribución por categorías taxonómicas
         ax = axes[0]
@@ -835,7 +800,6 @@ class COG2024Analyzer:
                 ax.text(bar.get_x() + bar.get_width()/2., height,
                        f'{count:,}\n({percent:.1f}%)', ha='center', va='bottom', fontweight='bold')
             
-            # Añadir líneas de referencia del readme
             ax.axhline(self.readme_specs['bacteria'], color='blue', linestyle='--', alpha=0.5, 
                       label=f"Spec Bacteria: {self.readme_specs['bacteria']:,}")
             ax.axhline(self.readme_specs['archaea'], color='red', linestyle='--', alpha=0.5,
@@ -918,12 +882,11 @@ class COG2024Analyzer:
             ax.text(0.5, 0.5, 'Estadísticas de\nsecuencias no disponibles', 
                    ha='center', va='center', transform=ax.transAxes)
         
-        # 2. Información de genes (si disponible)
+        # 2. Información de genes 
         ax = axes[1]
         if has_gene_info:
             gene_df = self.data['gene_info']
             
-            # Análisis de direcciones de genes (columna 3 según readme)
             if len(gene_df.columns) > 2:
                 directions = gene_df.iloc[:, 2].value_counts()
                 
@@ -949,15 +912,13 @@ class COG2024Analyzer:
         actual_values = []
         
         if has_protein_stats:
-            # Extrapolar de la muestra
             sample_count = self.data['protein_stats']['sample_count']
-            estimated_total = sample_count * 770  # Aproximación basada en tamaño de archivo
+            estimated_total = sample_count * 770  
             categories.append('Proteínas')
             spec_values.append(spec_proteins)
             actual_values.append(estimated_total)
         
         if has_gene_info:
-            # Extrapolar de la muestra
             sample_count = len(self.data['gene_info'])
             estimated_total = sample_count * 2900  # Aproximación
             categories.append('Genes')
@@ -980,10 +941,8 @@ class COG2024Analyzer:
             ax.legend()
             ax.grid(axis='y', alpha=0.3)
             
-            # Convertir a millones para legibilidad
             ax.set_yscale('log')
             
-            # Añadir valores
             for bars in [bars1, bars2]:
                 for bar in bars:
                     height = bar.get_height()
@@ -1019,122 +978,122 @@ class COG2024Analyzer:
         plt.show()
         logger.info("Gráfico guardado: cog2024_protein_analysis.png")
     
-    def generate_comprehensive_report(self) -> None:
-        """Genera un reporte comprensivo final."""
-        fig, ax = plt.subplots(figsize=(16, 12))
-        ax.axis('off')
+#     def generate_comprehensive_report(self) -> None:
+#         """Genera un reporte comprensivo final."""
+#         fig, ax = plt.subplots(figsize=(16, 12))
+#         ax.axis('off')
         
-        fig.suptitle('COG 2024 - Reporte Comprensivo de Análisis', fontsize=20, fontweight='bold')
+#         fig.suptitle('COG 2024 - Reporte Comprensivo de Análisis', fontsize=20, fontweight='bold')
         
-        # Recopilar todas las estadísticas
-        report_text = f"""
-COG 2024 DATABASE ANALYSIS REPORT
-{'=' * 80}
+#         # Recopilar todas las estadísticas
+#         report_text = f"""
+# COG 2024 DATABASE ANALYSIS REPORT
+# {'=' * 80}
 
-ARCHIVOS PROCESADOS:
-{'-' * 40}
-"""
+# ARCHIVOS PROCESADOS:
+# {'-' * 40}
+# """
         
-        file_count = 0
-        total_size = 0
+#         file_count = 0
+#         total_size = 0
         
-        for data_type, filename in self.expected_files.items():
-            file_path = self.data_dir / filename
-            if file_path.exists():
-                size = file_path.stat().st_size
-                total_size += size
-                status = "✓ CARGADO" if data_type in self.data else "✓ Disponible"
-                report_text += f"• {filename:<25} | {self._format_size(size):>8} | {status}\n"
-                file_count += 1
+#         for data_type, filename in self.expected_files.items():
+#             file_path = self.data_dir / filename
+#             if file_path.exists():
+#                 size = file_path.stat().st_size
+#                 total_size += size
+#                 status = "✓ CARGADO" if data_type in self.data else "✓ Disponible"
+#                 report_text += f"• {filename:<25} | {self._format_size(size):>8} | {status}\n"
+#                 file_count += 1
         
-        report_text += f"\nTotal archivos: {file_count}/9 | Tamaño total: {self._format_size(total_size)}\n"
+#         report_text += f"\nTotal archivos: {file_count}/9 | Tamaño total: {self._format_size(total_size)}\n"
         
-        report_text += f"""
+#         report_text += f"""
 
-ESTADÍSTICAS PRINCIPALES:
-{'-' * 40}
-"""
+# ESTADÍSTICAS PRINCIPALES:
+# {'-' * 40}
+# """
         
-        if 'genomes' in self.data:
-            report_text += f"• Genomas analizados: {len(self.data['genomes']):,}\n"
+#         if 'genomes' in self.data:
+#             report_text += f"• Genomas analizados: {len(self.data['genomes']):,}\n"
         
-        if 'definitions' in self.data:
-            report_text += f"• COGs definidos: {len(self.data['definitions']):,}\n"
+#         if 'definitions' in self.data:
+#             report_text += f"• COGs definidos: {len(self.data['definitions']):,}\n"
         
-        if 'cog_assignments' in self.data:
-            report_text += f"• Asignaciones COG (muestra): {len(self.data['cog_assignments']):,}\n"
+#         if 'cog_assignments' in self.data:
+#             report_text += f"• Asignaciones COG (muestra): {len(self.data['cog_assignments']):,}\n"
         
-        if 'pathways' in self.data:
-            pathways_count = self.data['pathways'].iloc[:, 0].nunique()
-            report_text += f"• Pathways únicos: {pathways_count:,}\n"
+#         if 'pathways' in self.data:
+#             pathways_count = self.data['pathways'].iloc[:, 0].nunique()
+#             report_text += f"• Pathways únicos: {pathways_count:,}\n"
         
-        if 'protein_stats' in self.data:
-            stats = self.data['protein_stats']
-            report_text += f"• Proteínas analizadas (muestra): {stats['sample_count']:,}\n"
-            report_text += f"• Longitud media proteínas: {stats['mean_length']:.1f} aa\n"
+#         if 'protein_stats' in self.data:
+#             stats = self.data['protein_stats']
+#             report_text += f"• Proteínas analizadas (muestra): {stats['sample_count']:,}\n"
+#             report_text += f"• Longitud media proteínas: {stats['mean_length']:.1f} aa\n"
         
-        report_text += f"""
+#         report_text += f"""
 
-ESPECIFICACIONES ORIGINALES (README):
-{'-' * 40}
-• Total genomas: {self.readme_specs['total_genomes']:,}
-• Bacterias: {self.readme_specs['bacteria']:,}
-• Arqueas: {self.readme_specs['archaea']:,}  
-• Total proteínas: {self.readme_specs['total_proteins']:,}
-• Total genes: {self.readme_specs['total_genes']:,}
-• Total COGs: {self.readme_specs['total_cogs']:,}
-• Géneros representados: {self.readme_specs['genera']:,}
+# ESPECIFICACIONES ORIGINALES (README):
+# {'-' * 40}
+# • Total genomas: {self.readme_specs['total_genomes']:,}
+# • Bacterias: {self.readme_specs['bacteria']:,}
+# • Arqueas: {self.readme_specs['archaea']:,}  
+# • Total proteínas: {self.readme_specs['total_proteins']:,}
+# • Total genes: {self.readme_specs['total_genes']:,}
+# • Total COGs: {self.readme_specs['total_cogs']:,}
+# • Géneros representados: {self.readme_specs['genera']:,}
 
-ANÁLISIS REALIZADOS:
-{'-' * 40}
-• Overview general de datos
-• Análisis detallado de asignaciones COG
-• Distribución de genomas y taxonomía
-• Análisis de pathways y sistemas funcionales
-• Estadísticas de proteínas y secuencias
-• Validación contra especificaciones
+# ANÁLISIS REALIZADOS:
+# {'-' * 40}
+# • Overview general de datos
+# • Análisis detallado de asignaciones COG
+# • Distribución de genomas y taxonomía
+# • Análisis de pathways y sistemas funcionales
+# • Estadísticas de proteínas y secuencias
+# • Validación contra especificaciones
 
-ARCHIVOS DE GRÁFICOS GENERADOS:
-{'-' * 40}
-• cog2024_overview.png
-• cog2024_assignments_analysis.png  
-• cog2024_pathways_analysis.png
-• cog2024_genome_distribution.png
-• cog2024_protein_analysis.png
-• cog2024_comprehensive_report.png
+# ARCHIVOS DE GRÁFICOS GENERADOS:
+# {'-' * 40}
+# • cog2024_overview.png
+# • cog2024_assignments_analysis.png  
+# • cog2024_pathways_analysis.png
+# • cog2024_genome_distribution.png
+# • cog2024_protein_analysis.png
+# • cog2024_comprehensive_report.png
 
-CONCLUSIONES:
-{'-' * 40}
-"""
+# CONCLUSIONES:
+# {'-' * 40}
+# """
         
-        if 'genomes' in self.data:
-            genome_coverage = (len(self.data['genomes']) / self.readme_specs['total_genomes']) * 100
-            report_text += f"• Cobertura de genomas: {genome_coverage:.1f}% de lo especificado\n"
+#         if 'genomes' in self.data:
+#             genome_coverage = (len(self.data['genomes']) / self.readme_specs['total_genomes']) * 100
+#             report_text += f"• Cobertura de genomas: {genome_coverage:.1f}% de lo especificado\n"
         
-        if 'definitions' in self.data:
-            cog_coverage = (len(self.data['definitions']) / self.readme_specs['total_cogs']) * 100
-            report_text += f"• Cobertura de COGs: {cog_coverage:.1f}% de lo especificado\n"
+#         if 'definitions' in self.data:
+#             cog_coverage = (len(self.data['definitions']) / self.readme_specs['total_cogs']) * 100
+#             report_text += f"• Cobertura de COGs: {cog_coverage:.1f}% de lo especificado\n"
         
-        report_text += f"""• Base de datos COG 2024 representa un recurso masivo
-• Datos estructurados según especificaciones del readme
-• Análisis exitoso de componentes principales
+#         report_text += f"""• Base de datos COG 2024 representa un recurso masivo
+# • Datos estructurados según especificaciones del readme
+# • Análisis exitoso de componentes principales
 
-Generado: {pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')}
-Directorio: {self.data_dir}
-        """
+# Generado: {pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')}
+# Directorio: {self.data_dir}
+#         """
         
-        ax.text(0.05, 0.95, report_text, transform=ax.transAxes, fontsize=9,
-               verticalalignment='top', fontfamily='monospace',
-               bbox=dict(boxstyle="round,pad=1", facecolor="lightcyan", alpha=0.8))
+#         ax.text(0.05, 0.95, report_text, transform=ax.transAxes, fontsize=9,
+#                verticalalignment='top', fontfamily='monospace',
+#                bbox=dict(boxstyle="round,pad=1", facecolor="lightcyan", alpha=0.8))
         
-        plt.tight_layout()
-        plt.savefig(self.output_dir / 'cog2024_comprehensive_report.png', dpi=300, bbox_inches='tight')
-        plt.show()
-        logger.info("Reporte guardado: cog2024_comprehensive_report.png")
+#         plt.tight_layout()
+#         plt.savefig(self.output_dir / 'cog2024_comprehensive_report.png', dpi=300, bbox_inches='tight')
+#         plt.show()
+#         logger.info("Reporte guardado: cog2024_comprehensive_report.png") 
     
     def run_full_analysis(self) -> None:
         """Ejecuta el análisis completo de COG 2024."""
-        print("🧬 COG 2024 Specialized Analyzer")
+        print("COG 2024 Specialized Analyzer")
         print("=" * 50)
         print("Análisis basado en especificaciones del readme")
         print("=" * 50)
@@ -1146,8 +1105,8 @@ Directorio: {self.data_dir}
             print("\n❌ No se pudieron cargar datos suficientes para el análisis")
             return
         
-        print(f"\n📊 Generando análisis especializado...")
-        print(f"📁 Gráficos se guardarán en: {self.output_dir}")
+        print(f"\n Generando análisis especializado...")
+        print(f" Los Gráficos se guardarán en: {self.output_dir}")
         
         try:
             print("\n1. Overview general de COG 2024...")
@@ -1165,12 +1124,12 @@ Directorio: {self.data_dir}
             print("5. Análisis de proteínas...")
             self.plot_protein_analysis()
             
-            print("6. Reporte comprensivo final...")
-            self.generate_comprehensive_report()
+            # print("6. Reporte comprensivo final...")
+            # self.generate_comprehensive_report()
             
-            print(f"\n🎉 ¡Análisis COG 2024 completado!")
-            print(f"📊 6 conjuntos de gráficos generados")
-            print(f"📁 Ubicación: {self.output_dir}")
+            print(f"¡Análisis COG 2024 completado!")
+            print(f"6 conjuntos de gráficos generados")
+            print(f"Ubicación: {self.output_dir}")
             
         except Exception as e:
             logger.error(f"Error durante el análisis: {e}")
