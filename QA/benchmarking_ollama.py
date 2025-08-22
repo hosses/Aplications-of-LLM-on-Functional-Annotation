@@ -72,16 +72,16 @@ class OllamaGridSearchBenchmark:
             if isinstance(sample_model, dict) and 'predictions' in sample_model:
                 if 'grid_search_score' in sample_model or 'optimized_params' in sample_model:
                     self.data_type = 'gridsearch'
-                    logger.info("📊 Detectado: Resultados de Grid Search")
+                    logger.info("Detectado: Resultados de Grid Search")
                 elif 'confidence' in sample_model or 'similar_proteins' in sample_model:
                     self.data_type = 'rag'
                     logger.info("🔍 Detectado: Resultados de RAG")
                 else:
                     self.data_type = 'standard'
-                    logger.info("🦙 Detectado: Predicciones estándar")
+                    logger.info(" Ollama Detectado: Predicciones estándar")
             else:
                 self.data_type = 'legacy'
-                logger.info("📜 Detectado: Formato legacy")
+                logger.info("Detectado: Formato legacy")
         
         # Formato alternativo (solo predicciones)
         elif isinstance(data, dict) and any('predictions' in str(k).lower() for k in data.keys()):
